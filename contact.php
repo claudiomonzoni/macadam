@@ -1,4 +1,9 @@
 <?php
+if (file_exists(__DIR__ . '/config.local.php')) {
+    include(__DIR__ . '/config.local.php');
+} else {
+    $GOOGLE_MAPS_API_KEY = '';
+}
 $titulo = "Macadam accueil | Auto ecole Sierre Crans-Montana Contact ";
 $activo = "contact";
 include("header.php");
@@ -194,7 +199,7 @@ include("header.php");
                         }
                     </script>
                     <script async defer
-                        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA31Q-bmoMZX_CpmUe1LRhIGLikzKL3MkY&callback=initMap">
+                        src="https://maps.googleapis.com/maps/api/js?key=<?php echo htmlspecialchars($GOOGLE_MAPS_API_KEY); ?>&callback=initMap">
                     </script>
                     <div id="mapa"></div>
                 </div>
