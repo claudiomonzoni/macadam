@@ -220,8 +220,13 @@ include("header.php");
         var form = document.getElementById('formContactoWhatsApp');
         var whatsappPhone = '41794486760';
 
-        function esMovil() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        function usaAppNativa() {
+            var ua = navigator.userAgent;
+            if (/iPhone|iPod/i.test(ua)) return true;
+            if (/iPad|Tablet|PlayBook|Silk/i.test(ua)) return false;
+            if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return false;
+            if (/Android/i.test(ua)) return /Mobile/i.test(ua);
+            return false;
         }
 
         form.addEventListener('submit', function(e) {
@@ -238,7 +243,7 @@ include("header.php");
             texto += 'Type de cours: ' + typeCours + '\n';
             texto += 'Message: ' + message;
 
-            var baseUrl = esMovil() ? 'https://api.whatsapp.com/send' : 'https://web.whatsapp.com/send';
+            var baseUrl = usaAppNativa() ? 'https://api.whatsapp.com/send' : 'https://web.whatsapp.com/send';
             var url = baseUrl + '?phone=' + whatsappPhone + '&text=' + encodeURIComponent(texto);
 
             window.open(url, '_blank', 'noopener,noreferrer');
