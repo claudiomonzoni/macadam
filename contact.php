@@ -46,9 +46,15 @@ include("header.php");
                         <label for="message">Message</label>
                         <textarea class="form-control" id="message" name="message" rows="4" required placeholder="Votre message..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-default btn-contacto">
-                        <i class="fa fa-whatsapp" aria-hidden="true"></i>Contactez-moi
-                    </button>
+                    <p class="form-contacto-leyenda">Choisissez comment nous envoyer votre demande : <strong>WhatsApp</strong> pour un contact direct, ou <strong>Email</strong> pour ouvrir votre messagerie avec les données déjà remplies.</p>
+                    <div class="form-contacto-botones">
+                        <button type="button" id="btnWhatsApp" class="btn btn-default btn-contacto">
+                            <i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp
+                        </button>
+                        <button type="button" id="btnEmail" class="btn btn-default btn-contacto">
+                            <i class="fa fa-envelope" aria-hidden="true"></i> Email
+                        </button>
+                    </div>
                 </form>
             </section>
 
@@ -216,7 +222,10 @@ include("header.php");
 <script>
     (function() {
         var form = document.getElementById('formContactoWhatsApp');
+        var btnWhatsApp = document.getElementById('btnWhatsApp');
+        var btnEmail = document.getElementById('btnEmail');
         var whatsappPhone = '41794486760';
+        var emailContacto = 'blaisebetrisey@gmail.com';
 
         function usaAppNativa() {
             var ua = navigator.userAgent;
@@ -227,25 +236,50 @@ include("header.php");
             return false;
         }
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+        function getDatosFormulario() {
+            return {
+                nom: document.getElementById('nom').value.trim(),
+                telephone: document.getElementById('telephone').value.trim(),
+                typeCours: document.getElementById('typeCours').value,
+                message: document.getElementById('message').value.trim()
+            };
+        }
 
-            var nom = document.getElementById('nom').value.trim();
-            var telephone = document.getElementById('telephone').value.trim();
-            var typeCours = document.getElementById('typeCours').value;
-            var message = document.getElementById('message').value.trim();
-
+        function getTextoMensaje(datos) {
             var texto = 'Bonjour, je vous contacte depuis www.macadam-auto-ecole.ch\n\n';
-            texto += 'Nom et Prénom: ' + nom + '\n';
-            texto += 'Téléphone: ' + telephone + '\n';
-            texto += 'Type de cours: ' + typeCours + '\n';
-            texto += 'Message: ' + message;
+            texto += 'Nom et Prénom: ' + datos.nom + '\n';
+            texto += 'Téléphone: ' + datos.telephone + '\n';
+            texto += 'Type de cours: ' + datos.typeCours + '\n';
+            texto += 'Message: ' + datos.message;
+            return texto;
+        }
 
+        function enviarPorWhatsApp() {
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            var datos = getDatosFormulario();
+            var texto = getTextoMensaje(datos);
             var baseUrl = usaAppNativa() ? 'https://api.whatsapp.com/send' : 'https://web.whatsapp.com/send';
             var url = baseUrl + '?phone=' + whatsappPhone + '&text=' + encodeURIComponent(texto);
-
             window.open(url, '_blank', 'noopener,noreferrer');
-        });
+        }
+
+        function enviarPorEmail() {
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            var datos = getDatosFormulario();
+            var texto = getTextoMensaje(datos);
+            var subject = 'Contact Macadam - Demande de formation (' + datos.typeCours + ')';
+            var mailtoUrl = 'mailto:' + emailContacto + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(texto);
+            window.location.href = mailtoUrl;
+        }
+
+        btnWhatsApp.addEventListener('click', enviarPorWhatsApp);
+        btnEmail.addEventListener('click', enviarPorEmail);
     })();
 </script>
 
